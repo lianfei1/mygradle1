@@ -1,0 +1,71 @@
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'org.akhikhl.gretty'
+
+group 'mygradle1'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+/*dependencies {
+    repositories {
+        maven {
+            url: 'http://nexus.mycompany.com/nexus/public'
+        }
+    }
+}*/
+
+
+buildscript {
+    repositories {
+        jcenter()
+        // enable this to use snapshot versions of Gretty:
+        // maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
+    }
+
+    dependencies {
+        classpath 'org.akhikhl.gretty:gretty:1.2.4'
+    }
+}
+if (!project.plugins.findPlugin(org.akhikhl.gretty.GrettyPlugin))
+    project.apply(plugin: org.akhikhl.gretty.GrettyPlugin)
+
+dependencies {
+    compile(
+            'org.springframework:spring-context:4.2.6.RELEASE'
+    )
+    providedCompile(
+            'javax.servlet:javax.servlet-api:3.1.0'
+    )
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+[compileJava, javadoc, compileTestJava]*.options*.encoding = "UTF-8"
+
+gretty {
+    httpEnabled = true
+    servletContainer = "tomcat8"
+    contextPath = "/mygradle1"
+    host = "localhost"
+    httpPort = 8080
+    scanInterval = 1
+    fastReload = true
+    inplaceMode = "soft"
+    loggingLevel = "DEBUG"
+    consoleLogEnabled = true
+
+    debugPort = 6005
+    debugSuspend = true
+}
